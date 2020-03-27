@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BDF.Bot": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DiscordToken": "NjgyNzY3ODkzMjM4MjUxNjA1.Xlh1Mg.VwsGedyAm8uPg0e8VlcMI4KTHlQ"
+      }
+    }
+  }
+}
