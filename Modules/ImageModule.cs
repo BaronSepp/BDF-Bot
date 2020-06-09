@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace BDF.Bot.Modules
 {
+    
+    [Name("Image")]
     public class ImageModule : ModuleBase<SocketCommandContext>
     {
         public PictureService PictureService { get; set; }
@@ -18,20 +20,36 @@ namespace BDF.Bot.Modules
         }
 
         [Command("r34")]
-        [Alias("rule34")]
-        public async Task Rule34(string text)
+        [Alias("rule34", "34")]
+        public async Task Rule34([Remainder] string text)
         {
-            var stream = await PictureService.GetRule34(text);
-            stream.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(stream, "rule34.jpg");
+            try
+            {
+                var stream = await PictureService.GetRule34(text);
+                stream.Seek(0, SeekOrigin.Begin);
+                await Context.Channel.SendFileAsync(stream, "rule34.png");
+            }
+            catch
+            {
+                await Context.Channel.SendMessageAsync("Nothing found.");
+            }
+
         }
 
         [Command("anime")]
-        public async Task Anime(string text)
+        [Alias("safe")]
+        public async Task Anime([Remainder] string text)
         {
-            var stream = await PictureService.GetAnime(text);
-            stream.Seek(0, SeekOrigin.Begin);
-            await Context.Channel.SendFileAsync(stream, "rule34.jpg");
+            try
+            {
+                var stream = await PictureService.GetAnime(text);
+                stream.Seek(0, SeekOrigin.Begin);
+                await Context.Channel.SendFileAsync(stream, "anime.png");
+            }
+            catch
+            {
+                await Context.Channel.SendMessageAsync("Nothing found.");
+            }
         }
     }
 
