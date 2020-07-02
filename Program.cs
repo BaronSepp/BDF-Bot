@@ -28,7 +28,7 @@ namespace BDF.Bot
             services.GetRequiredService<CommandService>().Log += LogAsync;
 
             // Load token from env
-            await client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DiscordToken", EnvironmentVariableTarget.Machine));
+            await client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DiscordToken"));
 
             // Start Clients
             await client.StartAsync();
