@@ -59,8 +59,8 @@ namespace BDF.Bot
                 .AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>()
                 .AddSingleton(new LavalinkNodeOptions
                 {
-                    RestUri = "http://localhost:8081/",
-                    WebSocketUri = "ws://localhost:8081/",
+                    RestUri = "http://localhost:2333/",
+                    WebSocketUri = "ws://localhost:2333/",
                     Password = "youshallnotpass",
                     DisconnectOnStop = false,
                     ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
