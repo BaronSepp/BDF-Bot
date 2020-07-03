@@ -43,7 +43,8 @@ namespace BDF.Bot.Modules
                 $"- !image: Lists image commands.\n" +
                 $"- !echo {Format.Code("msg")}: Makes the bot say something.\n" +
                 $"- !ping: Test latency.\n" +
-                $"- !clean {Format.Code("amount")}: Deletes the specified amount of messages.");
+                $"- !clean {Format.Code("amount")}: Deletes the specified amount of messages." +
+                $"\n {Format.Quote($"{Format.Code("?")} available as alternative prefix.")}");
         }
 
         [Command("audio")]
