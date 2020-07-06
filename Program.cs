@@ -29,6 +29,7 @@ namespace BDF.Bot
 
             // Load token from env
             await client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DiscordToken"));
+            await client.SetGameAsync("!help or ?help");
 
             // Start Clients
             await client.StartAsync();
