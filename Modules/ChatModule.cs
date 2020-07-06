@@ -24,6 +24,7 @@ namespace BDF.Bot.Modules
         }
 
         [Command("clean", RunMode = RunMode.Async)]
+        [Alias("del", "rm")]
         [RequireUserPermission(GuildPermission.ManageMessages)]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
         public async Task CleanChatAsync(int amount)

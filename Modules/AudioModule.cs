@@ -25,6 +25,7 @@ namespace BDF.Bot.Modules
         }
 
         [Command("disconnect", RunMode = RunMode.Async)]
+        [Alias("leave")]
         public async Task Disconnect()
         {
             var player = await GetPlayerAsync();
@@ -69,6 +70,7 @@ namespace BDF.Bot.Modules
         }
 
         [Command("position", RunMode = RunMode.Async)]
+        [Alias("pos")]
         public async Task Position()
         {
             var player = await GetPlayerAsync();
@@ -88,6 +90,7 @@ namespace BDF.Bot.Modules
         }
 
         [Command("skip", RunMode = RunMode.Async)]
+        [Alias("next")]
         public async Task Skip()
         {
             var player = await GetPlayerAsync();
@@ -108,6 +111,7 @@ namespace BDF.Bot.Modules
         }
 
         [Command("queue", RunMode = RunMode.Async)]
+        [Alias("list")]
         public async Task Queue()
         {
             var player = await GetPlayerAsync();
