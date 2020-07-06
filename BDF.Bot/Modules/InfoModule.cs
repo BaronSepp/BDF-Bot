@@ -73,6 +73,13 @@ namespace BDF.Bot.Modules
                 $"- !cat: Returns cat picture.\n");
         }
 
+        [Command("minecraft")]
+        [Alias("mc")]
+        public async Task MinecraftInfoAsync()
+        {
+            await ReplyAsync("");
+        }
+
         private static string GetUptime() => (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");
         private static string GetHeapSize() => Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2).ToString();
     }
