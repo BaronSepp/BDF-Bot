@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using BDF.Lib.Entities;
 using Discord;
 using Discord.Commands;
 
@@ -42,6 +44,7 @@ namespace BDF.Bot.Modules
                 $"- !audio: Lists audio commands.\n" +
                 $"- !image: Lists image commands.\n" +
                 $"- !echo {Format.Code("msg")}: Makes the bot say something.\n" +
+                $"- !mc {Format.Code("ip")}: Queries a Minecraft server.\n" +
                 $"- !ping: Test latency.\n" +
                 $"- !clean {Format.Code("amount")}: Deletes the specified amount of messages." +
                 $"\n {Format.Quote($"{Format.Code("?")} available as alternative prefix.")}");
@@ -70,17 +73,38 @@ namespace BDF.Bot.Modules
                 $"{Format.Bold("Available Image Commands:")}\n" +
                 $"- !r34 {Format.Code("query")}: Returns a r34 image based on query.\n" +
                 $"- !anime {Format.Code("query")}: Returns a anime image based on query.\n" +
-                $"- !cat: Returns cat picture.\n");
+                $"- !cat: Returns cat picture.");
         }
 
         [Command("minecraft")]
         [Alias("mc")]
-        public async Task MinecraftInfoAsync()
+        public async Task MinecraftInfoAsync([Remainder] string url)
         {
-            await ReplyAsync("");
+            var query = await QueryMc(url);
+            
+            if (!query.online) { 
+                await ReplyAsync($"{query.hostname} is currently offline!");
+                return;
+            }
+
+            await ReplyAsync(
+                $"{Format.Bold($"{query.hostname} is online:")}\n" +
+                $"- IP: {query.ip}:{query.port}\n" +
+                $"- Players: {query.players.online}/{query.players.max}\n" +
+                $"- Version: {query.version} ({query.software})\n" +
+                $"- Plugins: {query.plugins.names.Count()}");
         }
 
         private static string GetUptime() => (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");
         private static string GetHeapSize() => Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2).ToString();
+        private async Task<McQuery> QueryMc(string url)
+        {
+            var httpClient = new HttpClient();
+            var response = await httpClient.GetAsync($"https://api.mcsrvstat.us/2/{url}");
+            var result = await response.Content.ReadAsStringAsync();
+
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<McQuery>(result);
+
+        }
     }
 }
