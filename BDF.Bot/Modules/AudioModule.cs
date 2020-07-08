@@ -15,13 +15,13 @@ namespace BDF.Bot.Modules
 {
     [Name("Music")]
     [RequireContext(ContextType.Guild)]
-    public sealed class AudioModule : ModuleBase<SocketCommandContext>
+    public class AudioModule : ModuleBase<SocketCommandContext>
     {
         private readonly IAudioService _audioService;
 
         public AudioModule(IAudioService audioService)
         {
-            _audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
+            _audioService = audioService;
         }
 
         [Command("disconnect", RunMode = RunMode.Async)]
@@ -181,6 +181,12 @@ namespace BDF.Bot.Modules
 
         private async Task<VoteLavalinkPlayer> GetPlayerAsync(bool connectToVoiceChannel = true)
         {
+            if (!Program.AudioEnabled)
+            {
+                await ReplyAsync("Audio Disabled.");
+                return null;
+            }
+
             var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
 
             if (player != null
@@ -203,6 +209,7 @@ namespace BDF.Bot.Modules
                 await ReplyAsync("The bot is not in a voice channel!");
                 return null;
             }
+
 
             return await _audioService.JoinAsync<VoteLavalinkPlayer>(user.VoiceChannel);
         }

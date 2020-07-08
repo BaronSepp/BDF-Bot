@@ -10,13 +10,20 @@ using Lavalink4NET.DiscordNet;
 using Microsoft.Extensions.DependencyInjection;
 using Lavalink4NET.Logging;
 using Lavalink4NET.MemoryCache;
+using Discord.Rest;
+using System.Net.WebSockets;
+using BDF.Bot.Modules;
 
 namespace BDF.Bot
 {
     class Program
     {
-        static void Main(string[] args) =>
+        public static bool AudioEnabled = true;
+  
+        static void Main()
+        {
             new Program().MainAsync().GetAwaiter().GetResult();
+        }
 
         public async Task MainAsync()
         {
@@ -33,7 +40,18 @@ namespace BDF.Bot
 
             // Start Clients
             await client.StartAsync();
-            await audio.InitializeAsync();
+
+            try
+            {
+                await audio.InitializeAsync();
+            }
+            catch (WebSocketException)
+            {
+                LogMessage log = new LogMessage(LogSeverity.Error, "Lavalink", "Server unreachable!", null);
+                await LogAsync(log);
+                await client.SetGameAsync("Audio Disabled");
+                AudioEnabled = false;
+            }
 
             // Register commands
             await services.GetRequiredService<CommandHandleService>().InitializeAsync();
@@ -44,20 +62,20 @@ namespace BDF.Bot
         private Task LogAsync(LogMessage log)
         {
             Console.WriteLine(log.ToString());
-
             return Task.CompletedTask;
         }
 
         private ServiceProvider ConfigureServices()
         {
+
             return new ServiceCollection()
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton<CommandService>()
                 .AddSingleton<CommandHandleService>()
                 .AddSingleton<HttpClient>()
                 .AddSingleton<PictureService>()
-                .AddSingleton<IAudioService, LavalinkNode>()
                 .AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>()
+                .AddSingleton<IAudioService, LavalinkNode>()
                 .AddSingleton(new LavalinkNodeOptions
                 {
                     RestUri = "http://localhost:2333/",
@@ -70,6 +88,9 @@ namespace BDF.Bot
                 })
                 .AddSingleton<ILavalinkCache, LavalinkCache>()
                 .BuildServiceProvider();
+
         }
+
+
     }
 }
