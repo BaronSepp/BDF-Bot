@@ -58,6 +58,7 @@ namespace BDF.Bot.Modules
                 $"{Format.Bold("Available Music Commands:")}\n" +
                 $"- !play {Format.Code("url")}: Plays song from given link.\n" +
                 $"- !disconnect: Disconnects the bot from the voice channel.\n" +
+                $"- !Connect: Connects the bot to the voice channel.\n" +
                 $"- !position: Shows elapsed track time.\n" +
                 $"- !skip: Skips the current song in queue and plays the next.\n" +
                 $"- !queue: Lists all songs in queue.\n" +

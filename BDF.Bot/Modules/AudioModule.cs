@@ -10,6 +10,7 @@ using Lavalink4NET.Player;
 using Lavalink4NET.Rest;
 using Lavalink4NET;
 using Lavalink4NET.DiscordNet;
+using Lavalink4NET.Tracking;
 
 namespace BDF.Bot.Modules
 {
@@ -19,9 +20,17 @@ namespace BDF.Bot.Modules
     {
         private readonly IAudioService _audioService;
 
-        public AudioModule(IAudioService audioService)
+        public AudioModule(IAudioService audioService, InactivityTrackingService trackingService)
         {
             _audioService = audioService;
+            trackingService.InactivePlayer += Disconnect;
+        }
+
+        [Command("connect", RunMode = RunMode.Async)]
+        [Alias("join")]
+        public async Task Connect()
+        {
+            await GetPlayerAsync();
         }
 
         [Command("disconnect", RunMode = RunMode.Async)]
@@ -29,25 +38,18 @@ namespace BDF.Bot.Modules
         public async Task Disconnect()
         {
             var player = await GetPlayerAsync();
+            if (player == null) return;
 
-            if (player == null)
-            {
-                return;
-            }
-
-            await player.StopAsync(true);
+            await player.DisconnectAsync();
             await ReplyAsync("Goodbye.");
+            player.Dispose();
         }
 
         [Command("play", RunMode = RunMode.Async)]
         public async Task Play([Remainder] string query)
         {
             var player = await GetPlayerAsync();
-
-            if (player == null)
-            {
-                return;
-            }
+            if (player == null) return;
 
             var track = await _audioService.GetTrackAsync(query, SearchMode.YouTube);
 
@@ -57,7 +59,7 @@ namespace BDF.Bot.Modules
                 return;
             }
 
-            var position = await player.PlayAsync(track, enqueue: true);
+            var position = await player.PlayAsync(track, true, null, null, false);
 
             if (position == 0)
             {
@@ -69,84 +71,11 @@ namespace BDF.Bot.Modules
             }
         }
 
-        [Command("position", RunMode = RunMode.Async)]
-        [Alias("pos")]
-        public async Task Position()
-        {
-            var player = await GetPlayerAsync();
-
-            if (player == null)
-            {
-                return;
-            }
-
-            if (player.CurrentTrack == null)
-            {
-                await ReplyAsync("Nothing playing!");
-                return;
-            }
-
-            await ReplyAsync($"Position: {player.TrackPosition} / {player.CurrentTrack.Duration}.");
-        }
-
-        [Command("skip", RunMode = RunMode.Async)]
-        [Alias("next")]
-        public async Task Skip()
-        {
-            var player = await GetPlayerAsync();
-
-            if (player == null)
-            {
-                return;
-            }
-
-            if (player.CurrentTrack == null)
-            {
-                await ReplyAsync("Nothing playing!");
-                return;
-            }
-
-
-            await player.SkipAsync();
-        }
-
-        [Command("queue", RunMode = RunMode.Async)]
-        [Alias("list")]
-        public async Task Queue()
-        {
-            var player = await GetPlayerAsync();
-
-            if (player == null)
-            {
-                return;
-            }
-
-            if (player.Queue == null || player.Queue.Tracks.Count == 0)
-            {
-                await ReplyAsync("Nothing in Queue!");
-                return;
-            }
-
-            int i = 1;
-            List<string> tracks = new List<string>();
-            foreach (var song in player.Queue.Tracks)
-            {
-                tracks.Add($"{i}. {song.Title}");
-                i++;
-            }
-            await ReplyAsync(string.Join("\n", tracks));
-        }
-
-
         [Command("stop", RunMode = RunMode.Async)]
         public async Task Stop()
         {
             var player = await GetPlayerAsync();
-
-            if (player == null)
-            {
-                return;
-            }
+            if (player == null) return;
 
             if (player.CurrentTrack == null)
             {
@@ -158,28 +87,78 @@ namespace BDF.Bot.Modules
             await ReplyAsync("Stopped playing.");
         }
 
+        [Command("position", RunMode = RunMode.Async)]
+        [Alias("pos")]
+        public async Task Position()
+        {
+            var player = await GetPlayerAsync();
+            if (player == null) return;
+
+            if (player.CurrentTrack == null)
+            {
+                await ReplyAsync("Nothing playing!");
+                return;
+            }
+
+            await ReplyAsync($"{Format.Bold("Position: ")}{player.TrackPosition.ToString("hh:mm:ss")} / {player.CurrentTrack.Duration.ToString("hh:mm:ss")}.");
+        }
+
+        [Command("skip", RunMode = RunMode.Async)]
+        [Alias("next")]
+        public async Task Skip()
+        {
+            var player = await GetPlayerAsync();
+            if (player == null) return;
+
+            if (player.CurrentTrack == null)
+            {
+                await ReplyAsync("Nothing playing!");
+                return;
+            }
+
+            await player.SkipAsync();
+        }
+
+        [Command("queue", RunMode = RunMode.Async)]
+        [Alias("list")]
+        public async Task Queue()
+        {
+            var player = await GetPlayerAsync();
+            if (player == null) return;
+
+            if (player.Queue == null || player.Queue.Tracks.Count == 0)
+            {
+                await ReplyAsync("Nothing in Queue!");
+                return;
+            }
+
+            int i = 1;
+            var tracks = new List<string>();
+            foreach (var song in player.Queue.Tracks)
+            {
+                tracks.Add($"{i}. {song.Title}");
+                i++;
+            }
+            await ReplyAsync(string.Join("\n", tracks));
+        }
+
         [Command("volume", RunMode = RunMode.Async)]
         public async Task Volume(int volume = 100)
         {
-            if (volume > 200 || volume < 0)
+            if (volume > 150 || volume < 0)
             {
-                await ReplyAsync("Volume out of range: 0% - 1000%!");
+                await ReplyAsync("Volume out of range: 0% - 150%!");
                 return;
             }
 
             var player = await GetPlayerAsync();
-
-            if (player == null)
-            {
-                return;
-            }
+            if (player == null) return;
 
             await player.SetVolumeAsync(volume / 100f);
             await ReplyAsync($"Volume updated: {volume}%");
         }
 
-
-        private async Task<VoteLavalinkPlayer> GetPlayerAsync(bool connectToVoiceChannel = true)
+        private async Task<VoteLavalinkPlayer> GetPlayerAsync()
         {
             if (!Program.AudioEnabled)
             {
@@ -189,9 +168,7 @@ namespace BDF.Bot.Modules
 
             var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
 
-            if (player != null
-                && player.State != PlayerState.NotConnected
-                && player.State != PlayerState.Destroyed)
+            if (player != null && player.State != PlayerState.NotConnected && player.State != PlayerState.Destroyed)
             {
                 return player;
             }
@@ -204,14 +181,15 @@ namespace BDF.Bot.Modules
                 return null;
             }
 
-            if (!connectToVoiceChannel)
-            {
-                await ReplyAsync("The bot is not in a voice channel!");
-                return null;
-            }
+            return await _audioService.JoinAsync<VoteLavalinkPlayer>(user.VoiceChannel, true, false);
+        }
 
+        private async Task Disconnect(object sender, InactivePlayerEventArgs eventArgs)
+        {
+            var player = eventArgs.Player;
 
-            return await _audioService.JoinAsync<VoteLavalinkPlayer>(user.VoiceChannel);
+            await player.DisconnectAsync();
+            player.Dispose();
         }
     }
 }

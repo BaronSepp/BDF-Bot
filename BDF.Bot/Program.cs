@@ -13,6 +13,7 @@ using Lavalink4NET.MemoryCache;
 using Discord.Rest;
 using System.Net.WebSockets;
 using BDF.Bot.Modules;
+using Lavalink4NET.Tracking;
 
 namespace BDF.Bot
 {
@@ -30,13 +31,14 @@ namespace BDF.Bot
             using var services = ConfigureServices();
             var client = services.GetRequiredService<DiscordSocketClient>();
             var audio = services.GetRequiredService<IAudioService>();
+            var tracking = services.GetRequiredService<InactivityTrackingService>();
 
             client.Log += LogAsync;
             services.GetRequiredService<CommandService>().Log += LogAsync;
 
             // Load token from env
             await client.LoginAsync(TokenType.Bot, Environment.GetEnvironmentVariable("DiscordToken"));
-            await client.SetGameAsync("!help or ?help");
+            await client.SetGameAsync("?help");
 
             // Start Clients
             await client.StartAsync();
@@ -44,6 +46,7 @@ namespace BDF.Bot
             try
             {
                 await audio.InitializeAsync();
+                tracking.BeginTracking();
             }
             catch (WebSocketException)
             {
@@ -84,13 +87,15 @@ namespace BDF.Bot
                     DisconnectOnStop = false,
                     ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
                     AllowResuming = true,
-                    BufferSize = 1024 * 1024 * 512 // 1 MiB
+                    BufferSize = 1024 * 1024 * 512
                 })
                 .AddSingleton<ILavalinkCache, LavalinkCache>()
+                .AddSingleton(new InactivityTrackingOptions 
+                {
+                    PollInterval = TimeSpan.FromSeconds(15),              
+                })
+                .AddSingleton<InactivityTrackingService>()
                 .BuildServiceProvider();
-
         }
-
-
     }
 }
