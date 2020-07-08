@@ -44,7 +44,7 @@ namespace BDF.Bot.Services
             // This value holds the offset where the prefix ends
             var argPos = 0;
             // Perform prefix check.
-            if (!message.HasCharPrefix('!', ref argPos) && !message.HasCharPrefix('?', ref argPos)) return;
+            if (!message.HasCharPrefix('?', ref argPos)) return;
 
             var context = new SocketCommandContext(_discord, message);
             // Perform the execution of the command. In this method,

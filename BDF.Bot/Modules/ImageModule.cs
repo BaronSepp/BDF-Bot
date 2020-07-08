@@ -21,6 +21,7 @@ namespace BDF.Bot.Modules
 
         [Command("r34")]
         [Alias("rule34", "34")]
+        [RequireNsfw]
         public async Task Rule34([Remainder] string text)
         {
             try
