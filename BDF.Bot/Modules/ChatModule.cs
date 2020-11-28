@@ -8,7 +8,6 @@ namespace BDF.Bot.Modules
 {
     public class ChatModule : ModuleBase<SocketCommandContext>
     {
-        public PictureService PictureService { get; set; }
 
         [Command("ping")]
         public async Task PingAsync()
@@ -30,7 +29,7 @@ namespace BDF.Bot.Modules
         public async Task CleanChatAsync(int amount)
         {
             var messages = await this.Context.Channel.GetMessagesAsync(amount + 1).FlattenAsync();
-            await (Context.Channel as SocketTextChannel).DeleteMessagesAsync(messages);
+            await ((SocketTextChannel) Context.Channel)?.DeleteMessagesAsync(messages);
             var m = await ReplyAsync($"Deleted {amount} messages.");
             await Task.Delay(2000);
             await m.DeleteAsync();

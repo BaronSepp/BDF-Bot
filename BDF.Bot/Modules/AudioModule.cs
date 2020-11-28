@@ -1,4 +1,4 @@
-﻿using BDF.Bot.Services;
+using BDF.Bot.Services;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -132,7 +132,7 @@ namespace BDF.Bot.Modules
                 return;
             }
 
-            int i = 1;
+            var i = 1;
             var tracks = new List<string>();
             foreach (var song in player.Queue.Tracks)
             {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BDF.Lib.Entities;
 using Discord;
 using Discord.Commands;
+using Newtonsoft.Json;
 
 namespace BDF.Bot.Modules
 {
@@ -81,30 +82,39 @@ namespace BDF.Bot.Modules
         public async Task MinecraftInfoAsync([Remainder] string url)
         {
             var query = await QueryMc(url);
-            
-            if (!query.online) { 
-                await ReplyAsync($"{query.hostname} is currently offline!");
+
+            if (!query.Online) {
+                await ReplyAsync($"{query.Hostname} is currently offline!");
                 return;
             }
 
-            await ReplyAsync(
-                $"{Format.Bold($"{query.hostname} is online:")}\n" +
-                $"- IP: {query.ip}:{query.port}\n" +
-                $"- Players: {query.players.online}/{query.players.max}\n" +
-                $"- Version: {query.version} ({query.software})\n" +
-                $"- Plugins: {query.plugins.names.Count()}");
+            var reply = $"{Format.Bold($"{query.Hostname} is online:")}\n" +
+                        $"- IP: {query.Ip}:{query.Port}\n" +
+                        $"- Players: {query.Players.Online}/{query.Players.Max}\n" +
+                        $"- Version: {query.Version} ({query.Software})\n";
+
+            if (query.Motd != null)
+            {
+                reply += $"\n- Motd: {query.Motd.Clean}";
+            }
+
+            if (query.Mods != null)
+            {
+                reply += $"\n- Plugins: {query.Mods.Names.Count}";
+            }
+
+            await ReplyAsync(reply);
         }
 
         private static string GetUptime() => (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");
         private static string GetHeapSize() => Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2).ToString();
-        private async Task<McQuery> QueryMc(string url)
+        private static async Task<McQuery> QueryMc(string url)
         {
             var httpClient = new HttpClient();
             var response = await httpClient.GetAsync($"https://api.mcsrvstat.us/2/{url}");
             var result = await response.Content.ReadAsStringAsync();
 
-            return Newtonsoft.Json.JsonConvert.DeserializeObject<McQuery>(result);
-
+            return JsonConvert.DeserializeObject<McQuery>(result);
         }
     }
 }

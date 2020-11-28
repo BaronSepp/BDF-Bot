@@ -35,7 +35,7 @@ namespace BDF.Bot.Services
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
         }
 
-        public async Task MessageReceivedAsync(SocketMessage rawMessage)
+        private async Task MessageReceivedAsync(SocketMessage rawMessage)
         {
             // Ignore system messages, or messages from other bots
             if (!(rawMessage is SocketUserMessage message)) return;
@@ -55,7 +55,7 @@ namespace BDF.Bot.Services
             // we will handle the result in CommandExecutedAsync,
         }
 
-        public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
+        private static async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
         {
             // command is unspecified when there was a search failure (command not found); we don't care about these errors
             if (!command.IsSpecified)

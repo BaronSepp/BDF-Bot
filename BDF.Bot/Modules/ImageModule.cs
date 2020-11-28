@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace BDF.Bot.Modules
 {
-    
     [Name("Image")]
     public class ImageModule : ModuleBase<SocketCommandContext>
     {
@@ -26,7 +25,8 @@ namespace BDF.Bot.Modules
         {
             try
             {
-                var stream = await PictureService.GetRule34(text);
+                var textArray = text.Split(' ');
+                var stream = await PictureService.GetRule34(textArray);
                 stream.Seek(0, SeekOrigin.Begin);
                 await Context.Channel.SendFileAsync(stream, "rule34.png");
             }
@@ -43,7 +43,8 @@ namespace BDF.Bot.Modules
         {
             try
             {
-                var stream = await PictureService.GetAnime(text);
+                var textArray = text.Split(' ');
+                var stream = await PictureService.GetAnime(textArray);
                 stream.Seek(0, SeekOrigin.Begin);
                 await Context.Channel.SendFileAsync(stream, "anime.png");
             }
