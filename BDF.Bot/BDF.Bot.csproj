@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>33bc549a-ec05-42a6-a6a0-45438aabd8b4</UserSecretsId>
+    <CodeAnalysisRuleSet>..\BDF.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
   <ItemGroup>
