@@ -8,6 +8,7 @@ using BDF.Lib.Entities;
 using Discord;
 using Discord.Commands;
 using Newtonsoft.Json;
+using static BDF.Lib.Constants;
 
 namespace BDF.Bot.Modules
 {
@@ -40,13 +41,13 @@ namespace BDF.Bot.Modules
         {
             await ReplyAsync(
                 $"{Format.Bold("Available Commands:")}\n" +
-                $"- ?info: Displays bot info.\n" +
-                $"- ?help: Lists available commands.\n" +
-                $"- ?audio: Lists audio commands.\n" +
-                $"- ?image: Lists image commands.\n" +
+                 "- ?info: Displays bot info.\n" +
+                 "- ?help: Lists available commands.\n" +
+                 "- ?audio: Lists audio commands.\n" +
+                 "- ?image: Lists image commands.\n" +
                 $"- ?echo {Format.Code("msg")}: Makes the bot say something.\n" +
                 $"- ?mc {Format.Code("ip")}: Queries a Minecraft server.\n" +
-                $"- ?ping: Test latency.\n" +
+                 "- ?ping: Test latency.\n" +
                 $"- ?clean {Format.Code("amount")}: Deletes the specified amount of messages.");
         }
 
@@ -57,12 +58,12 @@ namespace BDF.Bot.Modules
             await ReplyAsync(
                 $"{Format.Bold("Available Music Commands:")}\n" +
                 $"- ?play {Format.Code("url")}: Plays song from given link.\n" +
-                $"- ?disconnect: Disconnects the bot from the voice channel.\n" +
-                $"- ?Connect: Connects the bot to the voice channel.\n" +
-                $"- ?position: Shows elapsed track time.\n" +
-                $"- ?skip: Skips the current song in queue and plays the next.\n" +
-                $"- ?queue: Lists all songs in queue.\n" +
-                $"- ?stop: Stops playback.\n" +
+                 "- ?disconnect: Disconnects the bot from the voice channel.\n" +
+                 "- ?Connect: Connects the bot to the voice channel.\n" +
+                 "- ?position: Shows elapsed track time.\n" +
+                 "- ?skip: Skips the current song in queue and plays the next.\n" +
+                 "- ?queue: Lists all songs in queue.\n" +
+                 "- ?stop: Stops playback.\n" +
                 $"- ?volume {Format.Code("percentage")}: Sets the playback volume (0 - 200).");
         }
 
@@ -74,7 +75,7 @@ namespace BDF.Bot.Modules
                 $"{Format.Bold("Available Image Commands:")}\n" +
                 $"- ?r34 {Format.Code("query")}: Returns a r34 image based on query.\n" +
                 $"- ?anime {Format.Code("query")}: Returns a anime image based on query.\n" +
-                $"- ?cat: Returns cat picture.");
+                 "- ?cat: Returns cat picture.");
         }
 
         [Command("minecraft")]
@@ -98,16 +99,19 @@ namespace BDF.Bot.Modules
                 reply += $"\n- Motd: {query.Motd.Clean}";
             }
 
-            if (query.Mods != null)
-            {
-                reply += $"\n- Plugins: {query.Mods.Names.Count}";
-            }
-
             await ReplyAsync(reply);
         }
 
-        private static string GetUptime() => (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");
-        private static string GetHeapSize() => Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2).ToString();
+        private static string GetUptime()
+        {
+            return (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");
+        }
+
+        private static string GetHeapSize()
+        {
+            return Math.Round(GC.GetTotalMemory(true) / (1024.0 * 1024.0), 2).ToString(Culture);
+        }
+
         private static async Task<McQuery> QueryMc(string url)
         {
             var httpClient = new HttpClient();

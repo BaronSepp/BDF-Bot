@@ -40,7 +40,7 @@ namespace BDF.Bot.Modules
             var player = await GetPlayerAsync();
             if (player == null) return;
 
-            await player.DisconnectAsync();
+            await player.DisconnectAsync(); 
             await ReplyAsync("Goodbye.");
             player.Dispose();
         }
@@ -100,7 +100,7 @@ namespace BDF.Bot.Modules
                 return;
             }
 
-            await ReplyAsync($"{Format.Bold("Position: ")}{player.TrackPosition.ToString("hh:mm:ss")} / {player.CurrentTrack.Duration.ToString("hh:mm:ss")}.");
+            await ReplyAsync($"{Format.Bold("Position: ")}{player.TrackPosition:hh:mm:ss} / {player.CurrentTrack.Duration:hh:mm:ss}.");
         }
 
         [Command("skip", RunMode = RunMode.Async)]
