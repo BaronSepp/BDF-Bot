@@ -52,7 +52,6 @@ namespace BDF.Bot.Modules
             if (player == null) return;
 
             var track = await _audioService.GetTrackAsync(query, SearchMode.YouTube);
-
             if (track == null)
             {
                 await ReplyAsync(Format.Bold("No results."));
@@ -60,7 +59,6 @@ namespace BDF.Bot.Modules
             }
 
             var position = await player.PlayAsync(track, true, null, null, false);
-
             if (position == 0)
             {
                 await ReplyAsync($"{Format.Bold("Playing: ")}" + track.Title);
@@ -74,6 +72,8 @@ namespace BDF.Bot.Modules
         [Command("stop", RunMode = RunMode.Async)]
         public async Task Stop()
         {
+            if (!IsValidUser().Result) return;
+
             var player = await GetPlayerAsync();
             if (player == null) return;
 
@@ -99,7 +99,6 @@ namespace BDF.Bot.Modules
                 await ReplyAsync("Nothing playing!");
                 return;
             }
-
             await ReplyAsync($"{Format.Bold("Position: ")}{player.TrackPosition:hh:mm:ss} / {player.CurrentTrack.Duration:hh:mm:ss}.");
         }
 
@@ -107,6 +106,8 @@ namespace BDF.Bot.Modules
         [Alias("next")]
         public async Task Skip()
         {
+            if (!IsValidUser().Result) return;
+
             var player = await GetPlayerAsync();
             if (player == null) return;
 
@@ -143,8 +144,10 @@ namespace BDF.Bot.Modules
         }
 
         [Command("volume", RunMode = RunMode.Async)]
-        public async Task Volume(int volume = 100)
+        public async Task Volume(int volume = 50)
         {
+            if (!IsValidUser().Result) return;
+
             if (volume > 150 || volume < 0)
             {
                 await ReplyAsync("Volume out of range: 0% - 150%!");
@@ -167,14 +170,12 @@ namespace BDF.Bot.Modules
             }
 
             var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
-
             if (player != null && player.State != PlayerState.NotConnected && player.State != PlayerState.Destroyed)
             {
                 return player;
             }
 
             var user = Context.Guild.GetUser(Context.User.Id);
-
             if (!user.VoiceState.HasValue)
             {
                 await ReplyAsync("You must be in a voice channel!");
@@ -186,10 +187,25 @@ namespace BDF.Bot.Modules
 
         private async Task Disconnect(object sender, InactivePlayerEventArgs eventArgs)
         {
-            var player = eventArgs.Player;
+            if (!IsValidUser().Result) return;
 
+            var player = eventArgs.Player;
             await player.DisconnectAsync();
             player.Dispose();
+        }
+
+        private async Task<bool> IsValidUser()
+        {
+            var user = Context.Guild.GetUser(Context.User.Id);
+            var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
+
+            if (user.VoiceChannel != null && user.VoiceChannel.Id == player!.VoiceChannelId) 
+            {
+                await ReplyAsync("Fuck you.");
+                return false;
+            }
+
+            return true;
         }
     }
 }
