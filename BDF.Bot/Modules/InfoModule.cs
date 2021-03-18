@@ -64,7 +64,7 @@ namespace BDF.Bot.Modules
                  "- ?skip: Skips the current song in queue and plays the next.\n" +
                  "- ?queue: Lists all songs in queue.\n" +
                  "- ?stop: Stops playback.\n" +
-                $"- ?volume {Format.Code("percentage")}: Sets the playback volume (0 - 200).");
+                $"- ?volume {Format.Code("percentage")}: Sets the playback volume (0 - 150).");
         }
 
         [Command("image")]

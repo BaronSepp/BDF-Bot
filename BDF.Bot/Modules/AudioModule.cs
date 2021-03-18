@@ -37,6 +37,8 @@ namespace BDF.Bot.Modules
         [Alias("leave")]
         public async Task Disconnect()
         {
+            if (!IsValidUser()) return;
+            
             var player = await GetPlayerAsync();
             if (player == null) return;
 
@@ -72,7 +74,7 @@ namespace BDF.Bot.Modules
         [Command("stop", RunMode = RunMode.Async)]
         public async Task Stop()
         {
-            if (!IsValidUser().Result) return;
+            if (!IsValidUser()) return;
 
             var player = await GetPlayerAsync();
             if (player == null) return;
@@ -106,7 +108,7 @@ namespace BDF.Bot.Modules
         [Alias("next")]
         public async Task Skip()
         {
-            if (!IsValidUser().Result) return;
+            if (!IsValidUser()) return;
 
             var player = await GetPlayerAsync();
             if (player == null) return;
@@ -146,7 +148,7 @@ namespace BDF.Bot.Modules
         [Command("volume", RunMode = RunMode.Async)]
         public async Task Volume(int volume = 50)
         {
-            if (!IsValidUser().Result) return;
+            if (!IsValidUser()) return;
 
             if (volume > 150 || volume < 0)
             {
@@ -187,25 +189,25 @@ namespace BDF.Bot.Modules
 
         private async Task Disconnect(object sender, InactivePlayerEventArgs eventArgs)
         {
-            if (!IsValidUser().Result) return;
+            if (IsValidUser() is false) return;
 
             var player = eventArgs.Player;
             await player.DisconnectAsync();
             player.Dispose();
         }
 
-        private async Task<bool> IsValidUser()
+        private bool IsValidUser()
         {
             var user = Context.Guild.GetUser(Context.User.Id);
             var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
 
-            if (user.VoiceChannel != null && user.VoiceChannel.Id == player!.VoiceChannelId) 
+            if (user.VoiceChannel != null && user.VoiceChannel.Id == player!.VoiceChannelId)
             {
-                await ReplyAsync("Fuck you.");
-                return false;
+                return true;
             }
-
-            return true;
+            
+            ReplyAsync("Fuck you.");
+            return false;
         }
     }
 }
