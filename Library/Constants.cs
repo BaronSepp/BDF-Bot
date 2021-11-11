@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace BDF.Lib
+namespace Library
 {
     public static class Constants
     {
