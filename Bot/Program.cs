@@ -30,13 +30,10 @@ namespace Bot
             return Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging =>
                 {
-                    logging.ClearProviders();
                     logging.AddSimpleConsole(c =>
                     {
                         c.UseUtcTimestamp = true;
                         c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-                        c.IncludeScopes = false;
-                        c.ColorBehavior = LoggerColorBehavior.Enabled;
                     });
                 })
                 .ConfigureServices((hostContext, services) =>
