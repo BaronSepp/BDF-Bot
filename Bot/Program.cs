@@ -59,8 +59,8 @@ namespace Bot
                     services.AddSingleton<IAudioService, LavalinkNode>();
                     services.AddSingleton(new LavalinkNodeOptions
                     {
-                        RestUri = "http://localhost:2333/",
-                        WebSocketUri = "ws://localhost:2333/",
+                        RestUri = $"http://{hostContext.Configuration["LavaUri"]}/",
+                        WebSocketUri = $"ws://{hostContext.Configuration["LavaUri"]}/",
                         Password = "youshallnotpass",
                         DisconnectOnStop = false,
                         ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
