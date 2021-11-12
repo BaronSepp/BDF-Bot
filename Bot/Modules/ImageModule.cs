@@ -1,5 +1,7 @@
 ﻿using Bot.Handlers;
 using Discord.Commands;
+using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -9,10 +11,12 @@ namespace Bot.Modules
     public class ImageModule : ModuleBase<SocketCommandContext>
     {
         private readonly PictureHandler _pictureService;
+        private readonly ILogger<ImageModule> _logger;
 
-        public ImageModule(PictureHandler pictureService)
+        public ImageModule(PictureHandler pictureService, ILogger<ImageModule> logger)
         {
             _pictureService = pictureService;
+            _logger = logger;
         }
 
         [Command("cat")]
@@ -35,8 +39,9 @@ namespace Bot.Modules
                 stream.Seek(0, SeekOrigin.Begin);
                 await Context.Channel.SendFileAsync(stream, "rule34.png");
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex.Message, ex);
                 await Context.Channel.SendMessageAsync("Nothing found.");
             }
 
@@ -53,9 +58,10 @@ namespace Bot.Modules
                 stream.Seek(0, SeekOrigin.Begin);
                 await Context.Channel.SendFileAsync(stream, "anime.png");
             }
-            catch
+            catch (Exception ex)
             {
                 await Context.Channel.SendMessageAsync("Nothing found.");
+                _logger.LogError(ex.Message, ex);
             }
         }
     }
