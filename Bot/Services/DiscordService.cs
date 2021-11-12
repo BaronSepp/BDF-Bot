@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Bot.Handlers
 {
-    internal class DiscordService : BackgroundService
+    internal class DiscordService : IHostedService
     {
         private readonly DiscordSocketClient _discordSocketClient;
         private readonly IAudioService _audioService;
@@ -39,7 +39,7 @@ namespace Bot.Handlers
             _inactivityTrackingService = inactivityTrackingService ?? throw new ArgumentNullException(nameof(inactivityTrackingService));
         }
 
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             _discordSocketClient.Log += _loggingHandler.Log;
             _commandService.Log += _loggingHandler.Log;
@@ -59,7 +59,7 @@ namespace Bot.Handlers
             await _commandHandleService.InitializeAsync();
         }
 
-        public override async Task StopAsync(CancellationToken cancellationToken)
+        public async Task StopAsync(CancellationToken cancellationToken)
         {
             await _discordSocketClient.LogoutAsync();
             _inactivityTrackingService.StopTracking();
@@ -68,5 +68,6 @@ namespace Bot.Handlers
             _audioService.Dispose();
             _discordSocketClient.Dispose();
         }
+
     }
 }
