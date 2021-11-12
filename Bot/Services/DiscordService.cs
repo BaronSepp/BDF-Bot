@@ -57,6 +57,9 @@ namespace Bot.Handlers
 
             // Register commands
             await _commandHandleService.InitializeAsync();
+
+            // Uhm?
+            await Task.Delay(-1, cancellationToken);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)
