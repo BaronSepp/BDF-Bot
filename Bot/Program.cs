@@ -8,7 +8,6 @@ using Lavalink4NET.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Threading.Tasks;
 
@@ -22,7 +21,7 @@ namespace Bot
 
             await host.RunAsync();
 
-            return 0;
+            return Environment.ExitCode;
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)
@@ -62,7 +61,7 @@ namespace Bot
                         DisconnectOnStop = false,
                         ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
                         AllowResuming = true,
-                        BufferSize = 1024 * 1024 * 512
+                        BufferSize = 1024 * 512
                     });
                     services.AddSingleton<ILavalinkCache, LavalinkCache>();
 

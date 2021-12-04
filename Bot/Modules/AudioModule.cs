@@ -33,7 +33,8 @@ namespace Bot.Modules
         [Alias("leave")]
         public async Task Disconnect()
         {
-            if (!IsValidUser()) return;
+            var ValidUser = await IsValidUser();
+            if (ValidUser is false) return;
 
             var player = await GetPlayerAsync();
             if (player == null) return;
@@ -70,7 +71,8 @@ namespace Bot.Modules
         [Command("stop", RunMode = RunMode.Async)]
         public async Task Stop()
         {
-            if (!IsValidUser()) return;
+            var ValidUser = await IsValidUser();
+            if (ValidUser is false) return;
 
             var player = await GetPlayerAsync();
             if (player == null) return;
@@ -104,7 +106,8 @@ namespace Bot.Modules
         [Alias("next")]
         public async Task Skip()
         {
-            if (!IsValidUser()) return;
+            var ValidUser = await IsValidUser();
+            if (ValidUser is false) return;
 
             var player = await GetPlayerAsync();
             if (player == null) return;
@@ -144,7 +147,8 @@ namespace Bot.Modules
         [Command("volume", RunMode = RunMode.Async)]
         public async Task Volume(int volume = 50)
         {
-            if (!IsValidUser()) return;
+            var ValidUser = await IsValidUser();
+            if (ValidUser is false) return;
 
             if (volume > 150 || volume < 0)
             {
@@ -179,25 +183,26 @@ namespace Bot.Modules
 
         private async Task Disconnect(object sender, InactivePlayerEventArgs eventArgs)
         {
-            if (IsValidUser() is false) return;
+            var validUser = await IsValidUser();
+            if (validUser is false) return;
 
             var player = eventArgs.Player;
             await player.DisconnectAsync();
             player.Dispose();
         }
 
-        private bool IsValidUser()
+        private async Task<bool> IsValidUser()
         {
             var user = Context.Guild.GetUser(Context.User.Id);
             var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
 
-            if (user.VoiceChannel != null && user.VoiceChannel.Id == player!.VoiceChannelId)
+            if (user.VoiceChannel is null || user.VoiceChannel.Id != player.VoiceChannelId)
             {
-                return true;
+                await ReplyAsync("Fuck you.");
+                return false;
             }
 
-            ReplyAsync("Fuck you.");
-            return false;
+            return true;
         }
     }
 }
