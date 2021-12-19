@@ -19,46 +19,43 @@ namespace Bot.Modules
         public AudioModule(IAudioService audioService, InactivityTrackingService trackingService)
         {
             _audioService = audioService;
-            trackingService.InactivePlayer += Disconnect;
+            trackingService.InactivePlayer += DisconnectEvent;
         }
 
         [Command("connect", RunMode = RunMode.Async)]
         [Alias("join")]
-        public async Task Connect()
+        public async Task ConnectAsync()
         {
             await GetPlayerAsync();
         }
 
         [Command("disconnect", RunMode = RunMode.Async)]
         [Alias("leave")]
-        public async Task Disconnect()
+        public async Task DisconnectAsync()
         {
-            var ValidUser = await IsValidUser();
-            if (ValidUser is false) return;
+            if (IsValidUser() is false) return;
 
             var player = await GetPlayerAsync();
-            if (player == null) return;
+            if (player is null) return;
 
-            await player.DisconnectAsync();
-            await ReplyAsync("Goodbye.");
-            player.Dispose();
+            await DisconnectEvent(this, new InactivePlayerEventArgs(_audioService, player));
         }
 
         [Command("play", RunMode = RunMode.Async)]
-        public async Task Play([Remainder] string query)
+        public async Task PlayAsync([Remainder] string query)
         {
             var player = await GetPlayerAsync();
-            if (player == null) return;
+            if (player is null) return;
 
             var track = await _audioService.GetTrackAsync(query, SearchMode.YouTube);
-            if (track == null)
+            if (track is null)
             {
                 await ReplyAsync(Format.Bold("No results."));
                 return;
             }
 
             var position = await player.PlayAsync(track, true, null, null, false);
-            if (position == 0)
+            if (position is 0)
             {
                 await ReplyAsync($"{Format.Bold("Playing: ")}" + track.Title);
             }
@@ -69,15 +66,14 @@ namespace Bot.Modules
         }
 
         [Command("stop", RunMode = RunMode.Async)]
-        public async Task Stop()
+        public async Task StopAsync()
         {
-            var ValidUser = await IsValidUser();
-            if (ValidUser is false) return;
+            if (IsValidUser() is false) return;
 
             var player = await GetPlayerAsync();
-            if (player == null) return;
+            if (player is null) return;
 
-            if (player.CurrentTrack == null)
+            if (player.CurrentTrack is null)
             {
                 await ReplyAsync("Nothing playing!");
                 return;
@@ -89,12 +85,12 @@ namespace Bot.Modules
 
         [Command("position", RunMode = RunMode.Async)]
         [Alias("pos")]
-        public async Task Position()
+        public async Task PositionAsync()
         {
             var player = await GetPlayerAsync();
-            if (player == null) return;
+            if (player is null) return;
 
-            if (player.CurrentTrack == null)
+            if (player.CurrentTrack is null)
             {
                 await ReplyAsync("Nothing playing!");
                 return;
@@ -104,15 +100,14 @@ namespace Bot.Modules
 
         [Command("skip", RunMode = RunMode.Async)]
         [Alias("next")]
-        public async Task Skip()
+        public async Task SkipAsync()
         {
-            var ValidUser = await IsValidUser();
-            if (ValidUser is false) return;
+            if (IsValidUser() is false) return;
 
             var player = await GetPlayerAsync();
-            if (player == null) return;
+            if (player is null) return;
 
-            if (player.CurrentTrack == null)
+            if (player.CurrentTrack is null)
             {
                 await ReplyAsync("Nothing playing!");
                 return;
@@ -123,10 +118,10 @@ namespace Bot.Modules
 
         [Command("queue", RunMode = RunMode.Async)]
         [Alias("list")]
-        public async Task Queue()
+        public async Task QueueAsync()
         {
             var player = await GetPlayerAsync();
-            if (player == null) return;
+            if (GetPlayerAsync().Result is null) return;
 
             if (player.Queue == null || player.Queue.Tracks.Count == 0)
             {
@@ -135,7 +130,7 @@ namespace Bot.Modules
             }
 
             var i = 1;
-            var tracks = new List<string>();
+            var tracks = new List<string>(player.Queue.Count);
             foreach (var song in player.Queue.Tracks)
             {
                 tracks.Add($"{i}. {song.Title}");
@@ -145,10 +140,9 @@ namespace Bot.Modules
         }
 
         [Command("volume", RunMode = RunMode.Async)]
-        public async Task Volume(int volume = 50)
+        public async Task VolumeAsync(int volume = 50)
         {
-            var ValidUser = await IsValidUser();
-            if (ValidUser is false) return;
+            if (IsValidUser() is false) return;
 
             if (volume > 150 || volume < 0)
             {
@@ -157,7 +151,7 @@ namespace Bot.Modules
             }
 
             var player = await GetPlayerAsync();
-            if (player == null) return;
+            if (player is null) return;
 
             await player.SetVolumeAsync(volume / 100f);
             await ReplyAsync($"Volume updated: {volume}%");
@@ -166,13 +160,13 @@ namespace Bot.Modules
         private async Task<VoteLavalinkPlayer> GetPlayerAsync()
         {
             var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
-            if (player != null && player.State != PlayerState.NotConnected && player.State != PlayerState.Destroyed)
+            if (player is not null && player.State is not PlayerState.NotConnected or PlayerState.Destroyed)
             {
                 return player;
             }
 
             var user = Context.Guild.GetUser(Context.User.Id);
-            if (!user.VoiceState.HasValue)
+            if (user.VoiceState.HasValue is false)
             {
                 await ReplyAsync("You must be in a voice channel!");
                 return null;
@@ -181,26 +175,23 @@ namespace Bot.Modules
             return await _audioService.JoinAsync<VoteLavalinkPlayer>(user.VoiceChannel, true, false);
         }
 
-        private async Task Disconnect(object sender, InactivePlayerEventArgs eventArgs)
+        private async Task DisconnectEvent(object sender, InactivePlayerEventArgs eventArgs)
         {
-            var validUser = await IsValidUser();
-            if (validUser is false) return;
+            if (eventArgs.Player is null) return;
 
-            var player = eventArgs.Player;
-            await player.DisconnectAsync();
-            player.Dispose();
+            await eventArgs.Player.DisconnectAsync();
+            eventArgs.Player.Dispose();
+
+            await ReplyAsync("Goodbye.");
         }
 
-        private async Task<bool> IsValidUser()
+        private bool IsValidUser()
         {
             var user = Context.Guild.GetUser(Context.User.Id);
             var player = _audioService.GetPlayer<VoteLavalinkPlayer>(Context.Guild);
-
-            if (user.VoiceChannel is null || user.VoiceChannel.Id != player.VoiceChannelId)
-            {
-                await ReplyAsync("Fuck you.");
-                return false;
-            }
+            
+            if (user is null || user.VoiceChannel is null) return false;
+            if (user.VoiceChannel.Id != player.VoiceChannelId) return false;
 
             return true;
         }
