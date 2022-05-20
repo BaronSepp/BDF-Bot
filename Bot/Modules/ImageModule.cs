@@ -10,19 +10,19 @@ namespace Bot.Modules
     [Name("Image")]
     public class ImageModule : ModuleBase<SocketCommandContext>
     {
-        private readonly PictureHandler _pictureService;
+        private readonly PictureHandler _pictureHandler;
         private readonly ILogger<ImageModule> _logger;
 
-        public ImageModule(PictureHandler pictureService, ILogger<ImageModule> logger)
+        public ImageModule(PictureHandler pictureHandler, ILogger<ImageModule> logger)
         {
-            _pictureService = pictureService;
+            _pictureHandler = pictureHandler;
             _logger = logger;
         }
 
         [Command("cat")]
         public async Task CatAsync()
         {
-            var stream = await _pictureService.GetCatPictureAsync();
+            var stream = await _pictureHandler.GetCatPictureAsync();
             stream.Seek(0, SeekOrigin.Begin);
             await Context.Channel.SendFileAsync(stream, "cat.png");
         }
@@ -35,7 +35,7 @@ namespace Bot.Modules
             try
             {
                 var textArray = text.Split(' ');
-                var stream = await _pictureService.GetRule34(textArray);
+                var stream = await _pictureHandler.GetRule34(textArray);
                 stream.Seek(0, SeekOrigin.Begin);
                 await Context.Channel.SendFileAsync(stream, "rule34.png");
             }
@@ -54,7 +54,7 @@ namespace Bot.Modules
             try
             {
                 var textArray = text.Split(' ');
-                var stream = await _pictureService.GetAnime(textArray);
+                var stream = await _pictureHandler.GetAnime(textArray);
                 stream.Seek(0, SeekOrigin.Begin);
                 await Context.Channel.SendFileAsync(stream, "anime.png");
             }
