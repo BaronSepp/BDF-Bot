@@ -17,9 +17,9 @@ public class CommandHandler
 	public CommandHandler(IServiceProvider serviceProvider, CommandService commandService, DiscordSocketClient discordSocketClient)
 	{
 		// DI
-		_commandService = commandService;
-		_discordSocketClient = discordSocketClient;
-		_serviceProvider = serviceProvider;
+		_commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+		_discordSocketClient = discordSocketClient ?? throw new ArgumentNullException(nameof(discordSocketClient)); ;
+		_serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider)); ;
 
 		// Hook CommandExecuted to handle post-command-execution logic.
 		_commandService.CommandExecuted += CommandExecutedAsync;

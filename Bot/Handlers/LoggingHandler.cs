@@ -3,13 +3,12 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-#nullable enable
 namespace Bot.Handlers;
 
 public class LoggingHandler
 {
 	private readonly ILogger<LoggingHandler> _logger;
-	private delegate void Transform(string logMessage, params object?[] vs);
+	private delegate void Transform(string logMessage, params object[] vs);
 
 	public LoggingHandler(ILogger<LoggingHandler> logger)
 	{
