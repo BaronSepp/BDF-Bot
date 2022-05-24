@@ -39,11 +39,6 @@ public class AudioModule : ModuleBase<SocketCommandContext>
 		}
 
 		var player = await GetPlayerAsync();
-		if (player is null)
-		{
-			return;
-		}
-
 		await DisconnectEvent(this, new InactivePlayerEventArgs(_audioService, player));
 	}
 
@@ -145,7 +140,7 @@ public class AudioModule : ModuleBase<SocketCommandContext>
 	public async Task QueueAsync()
 	{
 		var player = await GetPlayerAsync();
-		if (GetPlayerAsync().Result is null)
+		if (await GetPlayerAsync() is null)
 		{
 			return;
 		}
@@ -208,17 +203,12 @@ public class AudioModule : ModuleBase<SocketCommandContext>
 		return await _audioService.JoinAsync<VoteLavalinkPlayer>(user.VoiceChannel, true, false);
 	}
 
-	private async Task DisconnectEvent(object sender, InactivePlayerEventArgs eventArgs)
+	private async Task DisconnectEvent(object _, InactivePlayerEventArgs eventArgs)
 	{
-		if (eventArgs.Player is null)
-		{
-			return;
-		}
+		if (eventArgs.Player is null) return;
 
 		await eventArgs.Player.DisconnectAsync();
-		eventArgs.Player.Dispose();
-
-		await ReplyAsync("Goodbye.");
+		await eventArgs.Player.DisposeAsync();
 	}
 
 	private bool IsValidUser()
