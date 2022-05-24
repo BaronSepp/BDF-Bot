@@ -1,4 +1,4 @@
-﻿using Bot.Handlers;
+using Bot.Handlers;
 using Discord.Commands;
 using Discord.WebSocket;
 using Lavalink4NET;
@@ -11,69 +11,68 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace Bot
+namespace Bot;
+
+internal static class Program
 {
-    internal static class Program
-    {
-        private static async Task<int> Main(string[] args)
-        {
-            using var host = CreateHostBuilder(args).Build();
+	private static async Task<int> Main(string[] args)
+	{
+		using var host = CreateHostBuilder(args).Build();
 
-            await host.RunAsync();
+		await host.RunAsync();
 
-            return Environment.ExitCode;
-        }
+		return Environment.ExitCode;
+	}
 
-        private static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
-                {
-                    logging.AddSimpleConsole(c =>
-                    {
-                        c.UseUtcTimestamp = true;
-                        c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-                    });
-                })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    // HttpClientFactory
-                    services.AddHttpClient();
+	private static IHostBuilder CreateHostBuilder(string[] args)
+	{
+		return Host.CreateDefaultBuilder(args)
+			.ConfigureLogging(logging =>
+			{
+				logging.AddSimpleConsole(c =>
+				{
+					c.UseUtcTimestamp = true;
+					c.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+				});
+			})
+			.ConfigureServices((hostContext, services) =>
+			{
+				// HttpClientFactory
+				services.AddHttpClient();
 
-                    // Wrapper
-                    services.AddSingleton<LoggingHandler>();
-                    services.AddHostedService<DiscordService>();
+				// Wrapper
+				services.AddSingleton<LoggingHandler>();
+				services.AddHostedService<DiscordService>();
 
-                    // Discord
-                    services.AddSingleton<DiscordSocketClient>();
-                    services.AddSingleton<CommandService>();
-                    services.AddSingleton<CommandHandler>();
-                    services.AddSingleton<PictureHandler>();
-                    services.AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>();
+				// Discord
+				services.AddSingleton<DiscordSocketClient>();
+				services.AddSingleton<CommandService>();
+				services.AddSingleton<CommandHandler>();
+				services.AddSingleton<PictureHandler>();
+				services.AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>();
 
-                    // Lavalink
-                    services.AddSingleton<IAudioService, LavalinkNode>();
-                    services.AddSingleton(new LavalinkNodeOptions
-                    {
-                        RestUri = $"http://{hostContext.Configuration["LavaUri"]}/",
-                        WebSocketUri = $"ws://{hostContext.Configuration["LavaUri"]}/",
-                        Password = "youshallnotpass",
-                        DisconnectOnStop = false,
-                        ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
-                        AllowResuming = true,
-                        BufferSize = 1024 * 512
-                    });
-                    services.AddSingleton<ILavalinkCache, LavalinkCache>();
+				// Lavalink
+				services.AddSingleton<IAudioService, LavalinkNode>();
+				services.AddSingleton(new LavalinkNodeOptions
+				{
+					RestUri = $"http://{hostContext.Configuration["LavaUri"]}/",
+					WebSocketUri = $"ws://{hostContext.Configuration["LavaUri"]}/",
+					Password = "youshallnotpass",
+					DisconnectOnStop = false,
+					ReconnectStrategy = ReconnectStrategies.DefaultStrategy,
+					AllowResuming = true,
+					BufferSize = 1024 * 512
+				});
+				services.AddSingleton<ILavalinkCache, LavalinkCache>();
 
-                    // Inactivity
-                    services.AddSingleton(new InactivityTrackingOptions
-                    {
-                        PollInterval = TimeSpan.FromSeconds(15),
-                    });
-                    services.AddSingleton<InactivityTrackingService>();
+				// Inactivity
+				services.AddSingleton(new InactivityTrackingOptions
+				{
+					PollInterval = TimeSpan.FromSeconds(15),
+				});
+				services.AddSingleton<InactivityTrackingService>();
 
-                })
-                .UseConsoleLifetime();
-        }
-    }
+			})
+			.UseConsoleLifetime();
+	}
 }
