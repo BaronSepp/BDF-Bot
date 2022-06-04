@@ -17,3 +17,4 @@
 !*.cs
 !*.json
 !*.yml
+!*.dcproj
