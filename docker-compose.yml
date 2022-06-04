@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  bot:
+    image: ${DOCKER_REGISTRY-}bot
+    build:
+      context: .
+      dockerfile: Bot/Dockerfile
+  lavalink:
+    container_name: lavalink
+    image: fredboat/lavalink:77a3bd81
+    expose:
+     - "2333"
+    volumes:
+     - ./application.yml:/opt/Lavalink/application.yml
