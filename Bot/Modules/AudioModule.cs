@@ -205,7 +205,7 @@ public class AudioModule : ModuleBase<SocketCommandContext>
 
 	private async Task DisconnectEvent(object _, InactivePlayerEventArgs eventArgs)
 	{
-		if (eventArgs.Player is null) return;
+		if (eventArgs.Player is null || eventArgs.Player.State is PlayerState.Destroyed or PlayerState.NotConnected) return;
 
 		await eventArgs.Player.DisconnectAsync();
 		await eventArgs.Player.DisposeAsync();
