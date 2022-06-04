@@ -1,9 +1,8 @@
-﻿using System.Globalization;
+using System.Globalization;
 
-namespace Library
+namespace Library;
+
+public static class Constants
 {
-    public static class Constants
-    {
-        public static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
-    }
+	public static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
 }
