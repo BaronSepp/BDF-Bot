@@ -4,8 +4,8 @@ services:
   bot:
     image: ${DOCKER_REGISTRY-}bot
     build:
-      context: .
-      dockerfile: ./Dockerfile
+      context: ..
+      dockerfile: ./Compose/Dockerfile
 
   lavalink:
     container_name: lavalink

@@ -3,9 +3,9 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["../Bot/Bot.csproj", "Bot/"]
-COPY ["../Library/Library.csproj", "Library/"]
-RUN dotnet restore "../Bot/Bot.csproj"
+COPY ["Bot/Bot.csproj", "Bot/"]
+COPY ["Library/Library.csproj", "Library/"]
+RUN dotnet restore "Bot/Bot.csproj"
 COPY . .
 WORKDIR "/src/Bot"
 RUN dotnet build "Bot.csproj" -c Release -o /app/build
