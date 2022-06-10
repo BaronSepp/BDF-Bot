@@ -1,3 +1,4 @@
+using Bot.Handlers;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -9,7 +10,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Bot.Handlers;
+namespace Bot.Services;
 
 internal class DiscordService : IHostedService
 {

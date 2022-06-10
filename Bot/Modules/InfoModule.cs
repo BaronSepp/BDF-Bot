@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BDF.Bot.Modules;
+namespace Bot.Modules;
 
 public class InfoModule : ModuleBase<SocketCommandContext>
 {
@@ -68,6 +68,6 @@ public class InfoModule : ModuleBase<SocketCommandContext>
 
 	private static string GetUptime()
 	{
-		return (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss");
+		return (DateTime.Now - Process.GetCurrentProcess().StartTime).ToString(@"dd\.hh\:mm\:ss", Constants.Culture);
 	}
 }
