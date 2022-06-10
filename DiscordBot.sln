@@ -11,12 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		application.yml = application.yml
 		LICENSE = LICENSE
+		NuGet.Config = NuGet.Config
 		readme.md = readme.md
 	EndProjectSection
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{70991612-E06D-4841-8AAB-55778EAF6647}"
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "Compose", "Compose\Compose.dcproj", "{70991612-E06D-4841-8AAB-55778EAF6647}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
