@@ -1,6 +1,7 @@
 using Bot.Handlers;
 using Discord;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Lavalink4NET;
 using Lavalink4NET.Tracking;
@@ -19,6 +20,8 @@ internal class DiscordService : IHostedService
 	private readonly IConfiguration _configuration;
 	private readonly CommandService _commandService;
 	private readonly CommandHandler _commandHandleService;
+	private readonly InteractionService _interactionService;
+	private readonly InteractionHandler _interactionHandler;
 	private readonly LoggingHandler _loggingHandler;
 	private readonly InactivityTrackingService _inactivityTrackingService;
 
@@ -28,6 +31,8 @@ internal class DiscordService : IHostedService
 		IConfiguration configuration,
 		CommandService commandService,
 		CommandHandler commandHandleService,
+		InteractionService interactionService,
+		InteractionHandler interactionHandler,
 		LoggingHandler loggingHandler,
 		InactivityTrackingService inactivityTrackingService)
 	{
@@ -36,6 +41,8 @@ internal class DiscordService : IHostedService
 		_configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
 		_commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 		_commandHandleService = commandHandleService ?? throw new ArgumentNullException(nameof(commandHandleService));
+		_interactionService = interactionService ?? throw new ArgumentNullException(nameof(interactionService));
+		_interactionHandler = interactionHandler ?? throw new ArgumentNullException(nameof(interactionHandler));
 		_loggingHandler = loggingHandler ?? throw new ArgumentNullException(nameof(loggingHandler));
 		_inactivityTrackingService = inactivityTrackingService ?? throw new ArgumentNullException(nameof(inactivityTrackingService));
 	}
@@ -44,6 +51,7 @@ internal class DiscordService : IHostedService
 	{
 		_discordSocketClient.Log += _loggingHandler.Log;
 		_commandService.Log += _loggingHandler.Log;
+		_interactionService.Log += _loggingHandler.Log;
 
 		// Load token from environment
 		await _discordSocketClient.LoginAsync(TokenType.Bot, _configuration["DiscordToken"]);
@@ -58,6 +66,7 @@ internal class DiscordService : IHostedService
 
 		// Register commands
 		await _commandHandleService.InitializeAsync();
+		await _interactionHandler.InitializeAsync();
 	}
 
 	public async Task StopAsync(CancellationToken cancellationToken)
