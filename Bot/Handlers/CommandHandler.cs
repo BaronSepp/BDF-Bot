@@ -20,16 +20,16 @@ public class CommandHandler
 		_commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 		_discordSocketClient = discordSocketClient ?? throw new ArgumentNullException(nameof(discordSocketClient)); ;
 		_serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider)); ;
+	}
 
+	public async Task InitializeAsync()
+	{
 		// Hook CommandExecuted to handle post-command-execution logic.
 		_commandService.CommandExecuted += CommandExecutedAsync;
 
 		// Hook MessageReceived so we can process each message to see
 		_discordSocketClient.MessageReceived += MessageReceivedAsync;
-	}
 
-	public async Task InitializeAsync()
-	{
 		// Register modules that are public and inherit ModuleBase<T>.
 		await _commandService.AddModulesAsync(Assembly.GetEntryAssembly(), _serviceProvider);
 	}
@@ -42,7 +42,7 @@ public class CommandHandler
 			return;
 		}
 
-		if (message.Source != MessageSource.User)
+		if (message.Source is not MessageSource.User)
 		{
 			return;
 		}

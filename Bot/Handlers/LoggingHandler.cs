@@ -8,7 +8,6 @@ namespace Bot.Handlers;
 public class LoggingHandler
 {
 	private readonly ILogger<LoggingHandler> _logger;
-	private delegate void Transform(string logMessage, params object[] vs);
 
 	public LoggingHandler(ILogger<LoggingHandler> logger)
 	{
@@ -17,18 +16,25 @@ public class LoggingHandler
 
 	public Task Log(LogMessage logMessage)
 	{
-		Transform transform = logMessage.Severity switch
+		var logLevel = logMessage.Severity switch
 		{
-			LogSeverity.Critical => _logger.LogCritical,
-			LogSeverity.Error => _logger.LogError,
-			LogSeverity.Warning => _logger.LogWarning,
-			LogSeverity.Info => _logger.LogInformation,
-			LogSeverity.Verbose => _logger.LogDebug,
-			LogSeverity.Debug => _logger.LogTrace,
+			LogSeverity.Critical => LogLevel.Critical,
+			LogSeverity.Error => LogLevel.Error,
+			LogSeverity.Warning => LogLevel.Warning,
+			LogSeverity.Info => LogLevel.Information,
+			LogSeverity.Verbose => LogLevel.Debug,
+			LogSeverity.Debug => LogLevel.Trace,
 			_ => throw new ArgumentException(nameof(logMessage.Severity))
 		};
+		if (logMessage.Exception is null)
+		{
+			_logger.Log(logLevel, "{Source}: {Message}", logMessage.Source, logMessage.Message);
+		}
+		else
+		{
+			_logger.Log(logLevel, logMessage.Exception, "{Source} has thrown an error!", logMessage.Source);
+		}
 
-		transform.Invoke(logMessage.Message, logMessage.Source, logMessage.Exception);
 
 		return Task.CompletedTask;
 	}

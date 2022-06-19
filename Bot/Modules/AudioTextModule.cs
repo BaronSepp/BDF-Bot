@@ -12,11 +12,11 @@ namespace Bot.Modules;
 
 [Name("Music")]
 [RequireContext(ContextType.Guild)]
-public class AudioModule : ModuleBase<SocketCommandContext>
+public class AudioTextModule : ModuleBase<SocketCommandContext>
 {
 	private readonly IAudioService _audioService;
 
-	public AudioModule(IAudioService audioService, InactivityTrackingService trackingService)
+	public AudioTextModule(IAudioService audioService, InactivityTrackingService trackingService)
 	{
 		_audioService = audioService;
 		trackingService.InactivePlayer += DisconnectEvent;

@@ -45,7 +45,7 @@ internal class DiscordService : IHostedService
 		_discordSocketClient.Log += _loggingHandler.Log;
 		_commandService.Log += _loggingHandler.Log;
 
-		// Load token from env
+		// Load token from environment
 		await _discordSocketClient.LoginAsync(TokenType.Bot, _configuration["DiscordToken"]);
 		await _discordSocketClient.SetGameAsync("?help");
 

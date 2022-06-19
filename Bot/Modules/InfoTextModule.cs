@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Bot.Modules;
 
-public class InfoModule : ModuleBase<SocketCommandContext>
+public class InfoTextModule : ModuleBase<SocketCommandContext>
 {
 	[Command("info")]
 	[Alias("about")]
@@ -34,7 +34,6 @@ public class InfoModule : ModuleBase<SocketCommandContext>
 			$"- ?audio: Lists audio commands.{Environment.NewLine}" +
 			$"- ?image: Lists image commands.{Environment.NewLine}" +
 			$"- ?echo {Format.Code("msg")}: Makes the bot say something.{Environment.NewLine}" +
-			$"- ?mc {Format.Code("ip")}: Queries a Minecraft server.{Environment.NewLine}" +
 			$"- ?ping: Test latency.{Environment.NewLine}" +
 			$"- ?clean {Format.Code("amount")}: Deletes the specified amount of messages.");
 	}

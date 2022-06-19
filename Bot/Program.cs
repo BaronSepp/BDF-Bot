@@ -14,12 +14,12 @@ using System.Threading.Tasks;
 
 namespace Bot;
 
-internal static class Program
+public static class Program
 {
+
 	private static async Task<int> Main(string[] args)
 	{
 		using var host = CreateHostBuilder(args).Build();
-
 		await host.RunAsync();
 
 		return Environment.ExitCode;

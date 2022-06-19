@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 namespace Bot.Modules;
 
 [Name("Image")]
-public class ImageModule : ModuleBase<SocketCommandContext>
+public class ImageTextModule : ModuleBase<SocketCommandContext>
 {
 	private readonly PictureHandler _pictureHandler;
-	private readonly ILogger<ImageModule> _logger;
+	private readonly ILogger<ImageTextModule> _logger;
 
-	public ImageModule(PictureHandler pictureHandler, ILogger<ImageModule> logger)
+	public ImageTextModule(PictureHandler pictureHandler, ILogger<ImageTextModule> logger)
 	{
 		_pictureHandler = pictureHandler;
 		_logger = logger;
