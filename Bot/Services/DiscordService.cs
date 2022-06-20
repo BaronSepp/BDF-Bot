@@ -55,7 +55,7 @@ internal class DiscordService : IHostedService
 
 		// Load token from environment
 		await _discordSocketClient.LoginAsync(TokenType.Bot, _configuration["DiscordToken"]);
-		await _discordSocketClient.SetGameAsync("?help");
+		await _discordSocketClient.SetGameAsync("/help");
 
 		// Start Clients
 		await _discordSocketClient.StartAsync();
