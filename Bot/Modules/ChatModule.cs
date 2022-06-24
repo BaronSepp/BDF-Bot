@@ -1,36 +1,44 @@
 using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
+using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Bot.Modules;
-
-public class ChatModule : ModuleBase<SocketCommandContext>
+public sealed class ChatModule : InteractionModuleBase<SocketInteractionContext>
 {
+	private readonly IHostApplicationLifetime _hostApplicationLifetime;
 
-	[Command("ping")]
-	public async Task PingAsync()
+	public ChatModule(IHostApplicationLifetime hostApplicationLifetime)
 	{
-		await ReplyAsync("pong!");
+		_hostApplicationLifetime = hostApplicationLifetime ?? throw new ArgumentNullException(nameof(hostApplicationLifetime));
 	}
 
-
-	[Command("echo")]
-	public async Task EchoAsync([Remainder] string text)
-	{
-		await ReplyAsync('\u200B' + text);
-	}
-
-	[Command("clean", RunMode = RunMode.Async)]
-	[Alias("del", "rm")]
+	[SlashCommand("prune", "Deletes the specified amount of messages.", runMode: RunMode.Async)]
 	[RequireUserPermission(GuildPermission.ManageMessages)]
 	[RequireBotPermission(ChannelPermission.ManageMessages)]
-	public async Task CleanChatAsync(int amount)
+	public async Task PruneMessagesAsync(int amount)
 	{
-		var messages = await Context.Channel.GetMessagesAsync(amount + 1).FlattenAsync();
-		await ((SocketTextChannel)Context.Channel)?.DeleteMessagesAsync(messages);
-		var m = await ReplyAsync($"Deleted {amount} messages.");
-		await Task.Delay(2000);
-		await m.DeleteAsync();
+		var messages = Context.Channel.GetMessagesAsync(amount).Flatten();
+		var filteredMessages = new List<IMessage>(100);
+
+		await foreach (var message in messages.WithCancellation(_hostApplicationLifetime.ApplicationStopping))
+		{
+			if (message.Timestamp > DateTimeOffset.Now.AddDays(-14))
+			{
+				filteredMessages.Add(message);
+			}
+		}
+
+		await ((SocketTextChannel)Context.Channel)?.DeleteMessagesAsync(filteredMessages);
+		await RespondAsync($"Deleted {filteredMessages.Count} messages.", ephemeral: true);
+	}
+
+	[SlashCommand("ping", "Pings the bot and returns its latency.", runMode: RunMode.Sync)]
+	public async Task Ping()
+	{
+		await RespondAsync($"Pong! {Context.Client.Latency}ms", ephemeral: true);
 	}
 }

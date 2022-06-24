@@ -1,6 +1,7 @@
 using Bot.Handlers;
 using Bot.Services;
 using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using Lavalink4NET;
 using Lavalink4NET.DiscordNet;
@@ -48,9 +49,15 @@ public static class Program
 				// Discord
 				services.AddSingleton<DiscordSocketClient>();
 				services.AddSingleton<CommandService>();
-				services.AddSingleton<CommandHandler>();
+				services.AddSingleton<InteractionService>();
+				services.AddSingleton<InteractionHandler>();
 				services.AddSingleton<PictureHandler>();
 				services.AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>();
+				services.AddSingleton(new DiscordSocketConfig
+				{
+					GatewayIntents = Discord.GatewayIntents.AllUnprivileged,
+					AlwaysDownloadUsers = true
+				});
 
 				// Lavalink
 				services.AddSingleton<IAudioService, LavalinkNode>();
