@@ -18,8 +18,6 @@ internal class DiscordService : IHostedService
 	private readonly DiscordSocketClient _discordSocketClient;
 	private readonly IAudioService _audioService;
 	private readonly IConfiguration _configuration;
-	private readonly CommandService _commandService;
-	private readonly CommandHandler _commandHandleService;
 	private readonly InteractionService _interactionService;
 	private readonly InteractionHandler _interactionHandler;
 	private readonly LoggingHandler _loggingHandler;
@@ -29,8 +27,6 @@ internal class DiscordService : IHostedService
 		DiscordSocketClient discordSocketClient,
 		IAudioService audioService,
 		IConfiguration configuration,
-		CommandService commandService,
-		CommandHandler commandHandleService,
 		InteractionService interactionService,
 		InteractionHandler interactionHandler,
 		LoggingHandler loggingHandler,
@@ -39,8 +35,6 @@ internal class DiscordService : IHostedService
 		_discordSocketClient = discordSocketClient ?? throw new ArgumentNullException(nameof(discordSocketClient));
 		_audioService = audioService ?? throw new ArgumentNullException(nameof(audioService));
 		_configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-		_commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
-		_commandHandleService = commandHandleService ?? throw new ArgumentNullException(nameof(commandHandleService));
 		_interactionService = interactionService ?? throw new ArgumentNullException(nameof(interactionService));
 		_interactionHandler = interactionHandler ?? throw new ArgumentNullException(nameof(interactionHandler));
 		_loggingHandler = loggingHandler ?? throw new ArgumentNullException(nameof(loggingHandler));
@@ -50,7 +44,6 @@ internal class DiscordService : IHostedService
 	public async Task StartAsync(CancellationToken cancellationToken)
 	{
 		_discordSocketClient.Log += _loggingHandler.Log;
-		_commandService.Log += _loggingHandler.Log;
 		_interactionService.Log += _loggingHandler.Log;
 
 		// Load token from environment
@@ -65,7 +58,6 @@ internal class DiscordService : IHostedService
 		_inactivityTrackingService.BeginTracking();
 
 		// Register commands
-		await _commandHandleService.InitializeAsync();
 		await _interactionHandler.InitializeAsync();
 	}
 

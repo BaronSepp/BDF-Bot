@@ -50,9 +50,8 @@ public static class Program
 				services.AddSingleton<DiscordSocketClient>();
 				services.AddSingleton<CommandService>();
 				services.AddSingleton<InteractionService>();
-				services.AddSingleton<CommandHandler>();
-				services.AddSingleton<PictureHandler>();
 				services.AddSingleton<InteractionHandler>();
+				services.AddSingleton<PictureHandler>();
 				services.AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>();
 				services.AddSingleton(new DiscordSocketConfig
 				{

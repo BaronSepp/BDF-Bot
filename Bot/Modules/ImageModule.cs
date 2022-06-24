@@ -1,4 +1,5 @@
 using Bot.Handlers;
+using Discord;
 using Discord.Interactions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Bot.Modules;
 
-[Group("image", "All image related commands")]
+[Group("image", "Contains image related commands.")]
 public class ImageModule : InteractionModuleBase<SocketInteractionContext>
 {
 	private readonly PictureHandler _pictureHandler;
@@ -19,15 +20,26 @@ public class ImageModule : InteractionModuleBase<SocketInteractionContext>
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
 	}
 
-	[SlashCommand("cat", "Shows a random image of a cat.")]
-	public async Task CatAsync()
+	[SlashCommand("help", "Shows available image commands.")]
+	public async Task HelpImageAsync()
 	{
-		var stream = await _pictureHandler.GetCatPictureAsync();
-		stream.Seek(0, SeekOrigin.Begin);
-		await Context.Channel.SendFileAsync(stream, "cat.png");
+		await RespondAsync(
+			$"{Format.Bold("Available Image Commands:")}{Environment.NewLine}" +
+			$"- /image r34 {Format.Code("query")}: Returns a r34 image based on query.{Environment.NewLine}" +
+			$"- /image anime {Format.Code("query")}: Returns a anime image based on query.{Environment.NewLine}" +
+			 "- /image cat: Returns cat picture.");
 	}
 
-	[SlashCommand("r34", "Returns a random image that matches the given query.")]
+	[SlashCommand("cat", "Returns cat picture.")]
+	public async Task CatAsync()
+	{
+		await DeferAsync();
+		var stream = await _pictureHandler.GetCatPictureAsync();
+		stream.Seek(0, SeekOrigin.Begin);
+		await FollowupWithFileAsync(stream, "cat.png");
+	}
+
+	[SlashCommand("r34", "Returns a r34 image based on query.")]
 	[RequireNsfw]
 	public async Task Rule34Async(string query = "")
 	{
@@ -44,10 +56,9 @@ public class ImageModule : InteractionModuleBase<SocketInteractionContext>
 			_logger.LogError(ex, "An error occurred fetching Rule34 image!");
 			await FollowupAsync("Nothing found.", ephemeral: true);
 		}
-
 	}
 
-	[SlashCommand("anime", "Returns a random image that matches the given query.")]
+	[SlashCommand("anime", "Returns a anime image based on query.")]
 	public async Task AnimeAsync(string query = "")
 	{
 		try
