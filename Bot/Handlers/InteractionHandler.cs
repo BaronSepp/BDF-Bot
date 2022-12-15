@@ -3,12 +3,10 @@ using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace Bot.Handlers;
-public class InteractionHandler
+public sealed class InteractionHandler
 {
 	private readonly IConfiguration _configuration;
 	private readonly IServiceProvider _serviceProvider;

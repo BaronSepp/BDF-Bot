@@ -1,11 +1,9 @@
 using Discord;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace Bot.Handlers;
 
-public class LoggingHandler
+public sealed class LoggingHandler
 {
 	private readonly ILogger<LoggingHandler> _logger;
 

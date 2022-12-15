@@ -2,9 +2,6 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Bot.Modules;
 public sealed class ChatModule : InteractionModuleBase<SocketInteractionContext>

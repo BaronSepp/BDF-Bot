@@ -2,14 +2,11 @@ using Bot.Handlers;
 using Discord;
 using Discord.Interactions;
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Bot.Modules;
 
 [Group("image", "Contains image related commands.")]
-public class ImageModule : InteractionModuleBase<SocketInteractionContext>
+public sealed class ImageModule : InteractionModuleBase<SocketInteractionContext>
 {
 	private readonly PictureHandler _pictureHandler;
 	private readonly ILogger<ImageModule> _logger;

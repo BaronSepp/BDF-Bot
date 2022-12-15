@@ -10,14 +10,11 @@ using Lavalink4NET.Tracking;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
 
 namespace Bot;
 
 public static class Program
 {
-
 	private static async Task<int> Main(string[] args)
 	{
 		using var host = CreateHostBuilder(args).Build();

@@ -5,9 +5,6 @@ using Lavalink4NET.DiscordNet;
 using Lavalink4NET.Player;
 using Lavalink4NET.Rest;
 using Lavalink4NET.Tracking;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Bot.Modules;
 

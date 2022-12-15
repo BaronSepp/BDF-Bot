@@ -1,9 +1,6 @@
 using Discord;
 using Discord.Interactions;
-using System;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Bot.Modules;
 

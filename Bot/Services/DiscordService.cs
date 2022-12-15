@@ -1,19 +1,15 @@
 using Bot.Handlers;
 using Discord;
-using Discord.Commands;
 using Discord.Interactions;
 using Discord.WebSocket;
 using Lavalink4NET;
 using Lavalink4NET.Tracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Bot.Services;
 
-internal class DiscordService : IHostedService
+public sealed class DiscordService : IHostedService
 {
 	private readonly DiscordSocketClient _discordSocketClient;
 	private readonly IAudioService _audioService;

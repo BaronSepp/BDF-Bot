@@ -1,16 +1,12 @@
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-
 namespace Bot.Handlers;
 
-public class PictureHandler
+public sealed class PictureHandler
 {
 	private readonly IHttpClientFactory _httpClientFactory;
 
 	public PictureHandler(IHttpClientFactory httpClientFactory)
 	{
-		_httpClientFactory = httpClientFactory;
+		_httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
 	}
 
 	public async Task<Stream> GetCatPictureAsync()
